@@ -11,12 +11,24 @@ public class HealthController {
     @GetMapping("/")
     public Map<String, Object> home() {
         Map<String, Object> response = new HashMap<>();
-        response.put("message", "🎉 KT Backend App이 성공적으로 실행되었습니다!");
+        response.put("message", "🎉 KT 축제 관리 시스템 백엔드가 성공적으로 실행되었습니다!");
         response.put("status", "running");
         response.put("timestamp", LocalDateTime.now());
         response.put("port", "8080");
-        response.put("project", "backend-app");
-        response.put("database", "PostgreSQL 연결 준비");
+        response.put("project", "kt-backend-app");
+        response.put("version", "1.0.0");
+        response.put("description", "Figma 기반 축제 관리 시스템 REST API");
+        
+        // API 엔드포인트 목록
+        Map<String, String> endpoints = new HashMap<>();
+        endpoints.put("festivals", "/api/festivals - 축제 관리 API");
+        endpoints.put("zones", "/api/festivals/{id}/zones - 구역 관리 API");
+        endpoints.put("feedback", "/api/festivals/{id}/feedback - SNS 피드백 API");
+        endpoints.put("dashboard", "/api/dashboard - 대시보드 API");
+        endpoints.put("health", "/health - 헬스체크");
+        endpoints.put("db-test", "/api/db-test - DB 연결 테스트");
+        
+        response.put("endpoints", endpoints);
         return response;
     }
 
