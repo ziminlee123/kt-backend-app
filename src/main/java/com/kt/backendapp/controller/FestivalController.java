@@ -42,7 +42,7 @@ public class FestivalController {
      * 축제 상세 조회 (구역 포함)
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponseDTO<FestivalDTO>> getFestivalById(@PathVariable String id) {
+    public ResponseEntity<ApiResponseDTO<FestivalDTO>> getFestivalById(@PathVariable Long id) {
         log.info("축제 상세 조회 요청 - ID: {}", id);
         
         FestivalDTO festival = festivalService.getFestivalById(id);
@@ -68,7 +68,7 @@ public class FestivalController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponseDTO<FestivalDTO>> updateFestival(
-            @PathVariable String id,
+            @PathVariable Long id,
             @Valid @RequestBody FestivalRequestDTO requestDTO) {
         
         log.info("축제 수정 요청 - ID: {}, name: {}", id, requestDTO.getName());
@@ -81,7 +81,7 @@ public class FestivalController {
      * 축제 삭제
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponseDTO<Void>> deleteFestival(@PathVariable String id) {
+    public ResponseEntity<ApiResponseDTO<Void>> deleteFestival(@PathVariable Long id) {
         log.info("축제 삭제 요청 - ID: {}", id);
         
         festivalService.deleteFestival(id);
@@ -93,7 +93,7 @@ public class FestivalController {
      */
     @PatchMapping("/{id}/status")
     public ResponseEntity<ApiResponseDTO<FestivalDTO>> updateFestivalStatus(
-            @PathVariable String id,
+            @PathVariable Long id,
             @RequestParam String status) {
         
         log.info("축제 상태 변경 요청 - ID: {}, status: {}", id, status);
@@ -140,7 +140,7 @@ public class FestivalController {
      */
     @PatchMapping("/{id}/results")
     public ResponseEntity<ApiResponseDTO<FestivalDTO>> updateFestivalResults(
-            @PathVariable String id,
+            @PathVariable Long id,
             @RequestBody FestivalResultsDTO resultsDTO) {
         
         log.info("축제 결과 업데이트 요청 - ID: {}", id);

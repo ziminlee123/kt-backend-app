@@ -23,6 +23,23 @@ import java.util.*;
 public class FestivalServiceImpl implements FestivalService {
 
     private final FestivalRepository festivalRepository;
+    
+    // Entity를 DTO로 변환하는 메서드
+    private FestivalDTO convertToDTO(Festival festival) {
+        return FestivalDTO.builder()
+                .id(festival.getId())
+                .name(festival.getName())
+                .location(festival.getLocation())
+                .startDate(festival.getStartDate())
+                .endDate(festival.getEndDate())
+                .target(festival.getTarget())
+                .description(festival.getDescription())
+                .status(festival.getStatus().name().toLowerCase())
+                .durationDays(festival.getDurationDays())
+                .createdAt(festival.getCreatedAt())
+                .updatedAt(festival.getUpdatedAt())
+                .build();
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -49,65 +66,78 @@ public class FestivalServiceImpl implements FestivalService {
 
     @Override
     @Transactional(readOnly = true)
-    public FestivalDTO getFestivalById(String id) {
-        return createMockFestivalDetail(id);
+    public FestivalDTO getFestivalById(Long id) {
+        Festival festival = festivalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("축제를 찾을 수 없습니다: " + id));
+        return convertToDTO(festival);
     }
 
     @Override
     public FestivalDTO createFestival(FestivalRequestDTO requestDTO) {
         log.info("축제 생성: {}", requestDTO.getName());
         
-        return FestivalDTO.builder()
-                .id(UUID.randomUUID().toString())
+        // Entity 생성
+        Festival festival = Festival.builder()
                 .name(requestDTO.getName())
                 .location(requestDTO.getLocation())
                 .startDate(requestDTO.getStartDate())
                 .endDate(requestDTO.getEndDate())
                 .target(requestDTO.getTarget())
                 .description(requestDTO.getDescription())
-                .status(requestDTO.getStatus())
+                .status(FestivalStatus.valueOf(requestDTO.getStatus().toUpperCase()))
                 .zones(new ArrayList<>())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .build();
+        
+        // 데이터베이스에 저장
+        Festival savedFestival = festivalRepository.save(festival);
+        
+        // DTO로 변환하여 반환
+        return convertToDTO(savedFestival);
     }
 
     @Override
-    public FestivalDTO updateFestival(String id, FestivalRequestDTO requestDTO) {
+    public FestivalDTO updateFestival(Long id, FestivalRequestDTO requestDTO) {
         log.info("축제 수정: ID={}, Name={}", id, requestDTO.getName());
         
-        FestivalDTO existing = getFestivalById(id);
-        existing.setName(requestDTO.getName());
-        existing.setLocation(requestDTO.getLocation());
-        existing.setStartDate(requestDTO.getStartDate());
-        existing.setEndDate(requestDTO.getEndDate());
-        existing.setTarget(requestDTO.getTarget());
-        existing.setDescription(requestDTO.getDescription());
-        existing.setStatus(requestDTO.getStatus());
-        existing.setUpdatedAt(LocalDateTime.now());
+        Festival festival = festivalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("축제를 찾을 수 없습니다: " + id));
         
-        return existing;
+        festival.setName(requestDTO.getName());
+        festival.setLocation(requestDTO.getLocation());
+        festival.setStartDate(requestDTO.getStartDate());
+        festival.setEndDate(requestDTO.getEndDate());
+        festival.setTarget(requestDTO.getTarget());
+        festival.setDescription(requestDTO.getDescription());
+        festival.setStatus(FestivalStatus.valueOf(requestDTO.getStatus().toUpperCase()));
+        
+        Festival savedFestival = festivalRepository.save(festival);
+        return convertToDTO(savedFestival);
     }
 
     @Override
-    public void deleteFestival(String id) {
+    public void deleteFestival(Long id) {
         log.info("축제 삭제: ID={}", id);
-        // Mock: 실제로는 repository.deleteById(Long.parseLong(id)) 수행
+        if (!festivalRepository.existsById(id)) {
+            throw new RuntimeException("축제를 찾을 수 없습니다: " + id);
+        }
+        festivalRepository.deleteById(id);
     }
 
     @Override
-    public FestivalDTO updateFestivalStatus(String id, String status) {
+    public FestivalDTO updateFestivalStatus(Long id, String status) {
         log.info("축제 상태 변경: ID={}, Status={}", id, status);
         
-        FestivalDTO festival = getFestivalById(id);
-        festival.setStatus(status);
-        festival.setUpdatedAt(LocalDateTime.now());
+        Festival festival = festivalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("축제를 찾을 수 없습니다: " + id));
         
-        return festival;
+        festival.setStatus(FestivalStatus.valueOf(status.toUpperCase()));
+        Festival savedFestival = festivalRepository.save(festival);
+        
+        return convertToDTO(savedFestival);
     }
 
     @Override
-    public FestivalDTO updateFestivalResults(String id, FestivalResultsDTO resultsDTO) {
+    public FestivalDTO updateFestivalResults(Long id, FestivalResultsDTO resultsDTO) {
         log.info("축제 결과 업데이트: ID={}", id);
         
         FestivalDTO festival = getFestivalById(id);
@@ -172,7 +202,7 @@ public class FestivalServiceImpl implements FestivalService {
     private List<FestivalDTO> createMockFestivals() {
         return Arrays.asList(
                 FestivalDTO.builder()
-                        .id("1")
+                        .id(1L)
                         .name("2024 여름 음악 페스티벌")
                         .location("서울특별시 한강공원")
                         .startDate(LocalDate.of(2024, 7, 15))
@@ -186,7 +216,7 @@ public class FestivalServiceImpl implements FestivalService {
                         .build(),
                 
                 FestivalDTO.builder()
-                        .id("2")
+                        .id(2L)
                         .name("예술문화 축제")
                         .location("부산광역시 해운대구")
                         .startDate(LocalDate.of(2024, 8, 20))
@@ -200,7 +230,7 @@ public class FestivalServiceImpl implements FestivalService {
                         .build(),
                 
                 FestivalDTO.builder()
-                        .id("3")
+                        .id(3L)
                         .name("음식 & 와인 체험전")
                         .location("인천광역시 송도국제도시")
                         .startDate(LocalDate.of(2024, 6, 10))
@@ -218,7 +248,7 @@ public class FestivalServiceImpl implements FestivalService {
                         .build(),
                 
                 FestivalDTO.builder()
-                        .id("4")
+                        .id(4L)
                         .name("취소된 겨울 축제")
                         .location("대구광역시 달성군")
                         .startDate(LocalDate.of(2024, 12, 15))
@@ -243,7 +273,7 @@ public class FestivalServiceImpl implements FestivalService {
         if ("1".equals(id)) {
             festival.setZones(Arrays.asList(
                     ZoneDTO.builder()
-                            .id("1")
+                            .id(1L)
                             .name("메인 스테이지")
                             .type("main-stage")
                             .capacity(20000)
@@ -255,7 +285,7 @@ public class FestivalServiceImpl implements FestivalService {
                             .build(),
                     
                     ZoneDTO.builder()
-                            .id("2")
+                            .id(2L)
                             .name("푸드 플라자")
                             .type("food-court")
                             .capacity(5000)

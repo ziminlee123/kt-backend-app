@@ -25,7 +25,7 @@ public class DashboardServiceImpl implements DashboardService {
     public OperationalDashboardDTO getOperationalDashboard(String festivalId) {
         log.info("실시간 운영 대시보드 조회: Festival ID={}", festivalId);
         
-        FestivalDTO festival = festivalService.getFestivalById(festivalId);
+        FestivalDTO festival = festivalService.getFestivalById(Long.parseLong(festivalId));
         List<ZoneDTO> zones = zoneService.getZonesByFestivalId(festivalId);
         List<SNSFeedbackDTO> topIssues = snsService.getTopIssuesByMentions(festivalId, 3);
         Map<String, Object> feedbackSummary = snsService.getFeedbackSummary(festivalId);
@@ -77,7 +77,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public Object getFestivalPerformance(String festivalId) {
-        FestivalDTO festival = festivalService.getFestivalById(festivalId);
+        FestivalDTO festival = festivalService.getFestivalById(Long.parseLong(festivalId));
         
         Map<String, Object> performance = new HashMap<>();
         performance.put("festivalId", festivalId);

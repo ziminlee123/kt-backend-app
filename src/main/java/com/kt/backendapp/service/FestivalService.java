@@ -10,14 +10,14 @@ public interface FestivalService {
     
     // 기본 CRUD
     Page<FestivalDTO> getAllFestivals(Pageable pageable, String status, String search);
-    FestivalDTO getFestivalById(String id);
+    FestivalDTO getFestivalById(Long id);
     FestivalDTO createFestival(FestivalRequestDTO requestDTO);
-    FestivalDTO updateFestival(String id, FestivalRequestDTO requestDTO);
-    void deleteFestival(String id);
+    FestivalDTO updateFestival(Long id, FestivalRequestDTO requestDTO);
+    void deleteFestival(Long id);
     
     // 상태 관리
-    FestivalDTO updateFestivalStatus(String id, String status);
-    FestivalDTO updateFestivalResults(String id, FestivalResultsDTO resultsDTO);
+    FestivalDTO updateFestivalStatus(Long id, String status);
+    FestivalDTO updateFestivalResults(Long id, FestivalResultsDTO resultsDTO);
     
     // 조회 기능
     List<FestivalDTO> getCurrentlyRunningFestivals();

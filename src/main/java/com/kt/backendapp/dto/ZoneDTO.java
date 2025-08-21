@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ZoneDTO {
     
-    private String id; // 프론트엔드 호환성을 위해 String 타입 사용
+    private Long id; // 데이터베이스 auto increment ID
     
     private String name;
     
