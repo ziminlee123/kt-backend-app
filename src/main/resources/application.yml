@@ -10,11 +10,19 @@ spring:
   
   jpa:
     hibernate:
-      ddl-auto: update    # 개발 중이므로 update 권장
+      ddl-auto: none        # SQL 스크립트를 먼저 실행하도록 설정
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true
+  
+  sql:
+    init:
+      mode: always          # 스키마와 데이터 초기화 활성화
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+      continue-on-error: false
   
   jackson:
     time-zone: Asia/Seoul
